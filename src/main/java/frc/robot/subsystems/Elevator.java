@@ -54,7 +54,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command setPositionCmd(double pose) {
-        return runEnd(()-> setPosition(pose), ()-> setPosition(5.0));
+        return run(() -> setPosition(pose));
     }
 
     public boolean goingDown() {
@@ -66,11 +66,11 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isFinished() {
-        if (Math.abs(getPosition() - m_setpoint) <= tol) {
-            return true;
-        } else {
-            return false;
-        }
+        return isAtPosition(m_setpoint);
+    }
+
+    public boolean isAtPosition(double position) {
+        return Math.abs(getPosition() - position) <= tol;
     }
 
     @Override
@@ -100,4 +100,3 @@ public class Elevator extends SubsystemBase {
         m_cfg.apply(new FeedbackConfigs().withRemoteCANcoder(m_canCoder));
     }
 }
-

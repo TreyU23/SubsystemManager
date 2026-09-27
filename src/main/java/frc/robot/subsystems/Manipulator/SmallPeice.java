@@ -40,15 +40,12 @@ public class SmallPeice extends SubsystemBase {
     }
 
     public void setVoltage(double volts) {
-        if (m_canShoot) {
-            m_setpoint = volts;
-        } else {
-            m_setpoint = 0.0;
-        }
+        m_setpoint = volts;
         m_motor.setVoltage(m_setpoint);
     }
 
     public void stop() {
+        m_setpoint = 0.0;
         m_motor.stopMotor();
     }
 
@@ -60,10 +57,12 @@ public class SmallPeice extends SubsystemBase {
         return runEnd(() -> setVoltage(volts), () -> stop());
     }
 
-    public Command setCanShoot(boolean value) {
-        return runOnce(()-> {
-            m_canShoot = value;
-        });
+    public Command scoreCmd(double volts) {
+        return runEnd(() -> setVoltage(m_canShoot ? volts : 0.0), () -> stop());
+    }
+
+    public void setCanShoot(boolean value) {
+        m_canShoot = value;
     }
 
 

@@ -22,7 +22,6 @@ public class Arm extends SubsystemBase {
 
     private static double m_setpoint = 0.0;
 
-    private final boolean m_clear = true;
     private final double tol = 0.5;
 
     public Arm() {
@@ -46,19 +45,19 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean isClear() {
-        if (Math.abs(getPosition() - ArmConstants.kElevator) >= tol) {
-            return true;
-        } else {
-            return false;
-        }
+        return getPosition() >= ArmConstants.kClear - tol;
+    }
+
+    public boolean isIntakeSideClear() {
+        return getPosition() <= ArmConstants.kElevator - tol;
+    }
+
+    public boolean isAtPosition(double position) {
+        return Math.abs(getPosition() - position) <= tol;
     }
 
     public boolean isFinished() {
-        if (Math.abs(getPosition() - m_setpoint) <= tol) {
-            return true;
-        } else {
-            return false;
-        }
+        return isAtPosition(m_setpoint);
     }
 
     public void setPosition(double pose) {
@@ -71,12 +70,12 @@ public class Arm extends SubsystemBase {
     }
 
     public Command setPositionCmd(double pose) {
-        return runEnd(()-> setPosition(pose), ()-> setPosition(5.0));
+        return run(() -> setPosition(pose));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Arm Is Clear", m_clear);
+        SmartDashboard.putBoolean("Arm Is Clear", isClear());
         SmartDashboard.putNumber("Arm Setpoint", m_setpoint);
         SmartDashboard.putNumber("Arm Position", getPosition());
         SmartDashboard.putNumber("Arm Stator Current", getStatorCurrent());
